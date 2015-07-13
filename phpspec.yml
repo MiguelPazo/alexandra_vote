@@ -1,0 +1,5 @@
+suites:
+    main:
+        namespace: Ale
+        psr4_prefix: Ale
+        src_path: app

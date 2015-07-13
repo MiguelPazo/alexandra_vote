@@ -1,0 +1,15 @@
+.radio_vote {
+    display: inline-block;
+    cursor: pointer;
+    width: 128px;
+    height: 128px;
+    background-image: none;
+}
+
+.radio_vote_check {
+    background-color: #000000;
+}
+
+.float_right {
+    float: right;
+}
