@@ -7,6 +7,7 @@ use Ale\Http\Controllers\Controller;
 
 use Ale\Process;
 use Illuminate\Http\Request;
+use Illuminate\Database\Eloquent\Collection;
 
 class VoteController extends Controller
 {
@@ -85,6 +86,7 @@ class VoteController extends Controller
         }
 
         if ($success) {
+
             return redirect()->route('vote.confirm');
         } else {
             return redirect()->route('vote.index', [
@@ -101,7 +103,7 @@ class VoteController extends Controller
     public function listCedulas()
     {
         $lstAgrupol = Agrupol::get();
-        $lstCedula = [];
+        $lstCedula = new Collection();
 
         $c1 = new \stdClass();
         $c1->title = 'Cédula 1';
@@ -124,11 +126,11 @@ class VoteController extends Controller
         $c5->code = '05';
         $c5->lstAgrupol = $lstAgrupol;
 
-        $lstCedula[] = $c1;
-        $lstCedula[] = $c2;
-        $lstCedula[] = $c3;
-//        $lstCedula[] = $c4;
-//        $lstCedula[] = $c5;
+        $lstCedula->add($c1);
+        $lstCedula->add($c2);
+        $lstCedula->add($c3);
+        $lstCedula->add($c4);
+        $lstCedula->add($c5);
 
         return $lstCedula;
     }
