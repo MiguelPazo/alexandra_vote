@@ -113,14 +113,8 @@ class VoteController extends Controller
 
     public function listCedulas()
     {
-<<<<<<< HEAD
         $lstAgrupol = Organization::get();
         $lstCedula = [];
-=======
-        $lstAgrupol = Agrupol::get();
-        $lstCedula = new Collection();
->>>>>>> f83f09f1f2a4e88f313620d54ac91c8fe0c3001d
-
         $c1 = new \stdClass();
         $c1->title = 'Cédula 1';
         $c1->code = '01';
