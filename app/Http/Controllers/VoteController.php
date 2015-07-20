@@ -7,6 +7,7 @@ use Ale\Organization;
 use Ale\Process;
 use Ale\Scope_organization;
 use Illuminate\Http\Request;
+use Illuminate\Database\Eloquent\Collection;
 
 class VoteController extends Controller
 {
@@ -85,6 +86,7 @@ class VoteController extends Controller
         }
 
         if ($success) {
+
             return redirect()->route('vote.confirm');
         } else {
             return redirect()->route('vote.index', [
@@ -111,8 +113,13 @@ class VoteController extends Controller
 
     public function listCedulas()
     {
+<<<<<<< HEAD
         $lstAgrupol = Organization::get();
         $lstCedula = [];
+=======
+        $lstAgrupol = Agrupol::get();
+        $lstCedula = new Collection();
+>>>>>>> f83f09f1f2a4e88f313620d54ac91c8fe0c3001d
 
         $c1 = new \stdClass();
         $c1->title = 'Cédula 1';
@@ -135,11 +142,11 @@ class VoteController extends Controller
         $c5->code = '05';
         $c5->lstAgrupol = $lstAgrupol;
 
-        $lstCedula[] = $c1;
-        $lstCedula[] = $c2;
-        $lstCedula[] = $c3;
-//        $lstCedula[] = $c4;
-//        $lstCedula[] = $c5;
+        $lstCedula->add($c1);
+        $lstCedula->add($c2);
+        $lstCedula->add($c3);
+        $lstCedula->add($c4);
+        $lstCedula->add($c5);
 
         return $lstCedula;
     }
