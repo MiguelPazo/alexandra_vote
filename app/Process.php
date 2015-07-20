@@ -12,9 +12,4 @@ class Process extends Model
     {
         $query->where('status', $status);
     }
-
-    public function election()
-    {
-        return $this->hasMany('Election', 'process_id', 'id');
-    }
 }

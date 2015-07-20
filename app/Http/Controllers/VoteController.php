@@ -1,11 +1,11 @@
 <?php namespace Ale\Http\Controllers;
 
-use Ale\Agrupol;
-use Ale\Constants\ConstApp;
 use Ale\Http\Requests;
 use Ale\Http\Controllers\Controller;
 
+use Ale\Organization;
 use Ale\Process;
+use Ale\Scope_organization;
 use Illuminate\Http\Request;
 
 class VoteController extends Controller
@@ -98,9 +98,20 @@ class VoteController extends Controller
      *
      * @return array
      */
+
+    public function index2()
+    {
+        $scopesstring="1,2";
+        $scope=explode(config('vote.SEPARATOR'),$scopesstring);
+        dd($scope[0].config('vote.SEPARATOR').$scope[1]);
+        $scope_org=new Scope_organization();
+        $scope_org::query("scope_id","=",$scope[0]);
+        $so=$scope_org->get();
+    }
+
     public function listCedulas()
     {
-        $lstAgrupol = Agrupol::get();
+        $lstAgrupol = Organization::get();
         $lstCedula = [];
 
         $c1 = new \stdClass();

@@ -9,7 +9,7 @@
 namespace Ale\Constants;
 
 
-class ConstApp
+class App
 {
     const PREF_CED = 'ced_';
     const PREF_CED_DESC = 'ced_desc_';

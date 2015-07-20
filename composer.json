@@ -19,8 +19,7 @@
   },
   "autoload": {
     "classmap": [
-      "database",
-      "app/Constants"
+      "database"
     ],
     "psr-4": {
       "Ale\\": "app/"
