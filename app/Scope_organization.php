@@ -15,6 +15,11 @@ class Scope_organization extends Model {
     }
     public function scopes()
     {
-        return $this->belongsTo('App\Post');
+        return $this->belongsTo('App\Scopes');
+    }
+
+    public function scopeCedula($query, $value)
+    {
+        $query->where('scope_code','=', $value);
     }
 }

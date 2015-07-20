@@ -8,6 +8,7 @@ use Ale\Process;
 use Ale\Scope_organization;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Collection;
+use DB;
 
 class VoteController extends Controller
 {
@@ -103,12 +104,20 @@ class VoteController extends Controller
 
     public function index2()
     {
-        $scopesstring="1,2";
+        $scopesstring="01";
         $scope=explode(config('vote.SEPARATOR'),$scopesstring);
-        dd($scope[0].config('vote.SEPARATOR').$scope[1]);
-        $scope_org=new Scope_organization();
-        $scope_org::query("scope_id","=",$scope[0]);
-        $so=$scope_org->get();
+        //dd($scope[0].config('vote.SEPARATOR').$scope[1]);
+        //$scope_org=new Scope_organization();
+        //$scope_org::query("scope_code","=",$scope[0]);
+        //$so = DB::table('scope_organizations')->where('scope_code','=' ,'01')->get();
+        //$so = Scope_organization::where('scope_code','=' ,$scopesstring)->get();
+        $so = Scope_organization::Cedula('01')->get();
+        //$so=$scope_org->get();
+        $tudo="";
+        foreach ($so as $post) {
+            $tudo=$tudo.$post->code;
+        }
+        dd($so);
     }
 
     public function listCedulas()
