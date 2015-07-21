@@ -22,9 +22,10 @@ class VoteController extends Controller
         $this->request = $request;
     }
 
-    public function index2()
+    public function index()
     {
-        $lstCedula = $this->listCedulas();
+        $lstCedula = $this->listCedulas2('010603');
+        //dd($lstCedula);
         $error = $this->request->get('error', 0);
         $message = '';
 
@@ -102,22 +103,36 @@ class VoteController extends Controller
      * @return array
      */
 
-    public function index()
+    public function listCedulas2($scopesstring)
     {
-        $scopesstring="01";
-        $scope=explode(config('vote.SEPARATOR'),$scopesstring);
-        //dd($scope[0].config('vote.SEPARATOR').$scope[1]);
-        //$scope_org=new Scope_organization();
-        //$scope_org::query("scope_code","=",$scope[0]);
-        //$so = DB::table('scope_organizations')->where('scope_code','=' ,'01')->get();
-        //$so = Scope_organization::where('scope_code','=' ,$scopesstring)->get();
-        $so = Scope_organization::Cedula('01')->with('organization')->with('scope')->with('election')->get();
-        //$so=$scope_org->get();
+        //$scope=explode(config('vote.SEPARATOR'),$scopesstring);
+        //$so = Scope_organization::Cedula($scopesstring)->with('organization')->with('scope')->with('election')->get();
+        //$so2=$so->groupBy('election_code');
+        $so = Scope_organization::Cedula($scopesstring)->with('organization')->with('scope')->with('election')->get();
+        $so2=$so->groupBy('election_code');
         $tudo="";
-        foreach ($so as $post) {
-            $post->organization->description;
+
+        $lstCedula = new Collection();
+        foreach ($so2 as $post) {
+            $c1 = new \stdClass();
+            $c1->title = $post[0]->election->description;
+            $c1->code = $post[0]->election->code;
+            $group = new Collection();
+            foreach ($post as $item) {
+                //$c1->title = $post[2]->election->description;
+                //$c1->code = $post->election->code;
+                //$c1->lstAgrupol= $post->organization;
+                $group->add($item->organization);
+                //dd($c1->title);
+                //dd($group);
+                //$lstCedula->add($c1);
+            }
+            $c1->lstAgrupol = $group;
+            $lstCedula->add($c1);
         }
-        dd($so);
+        //dd($lstCedula);
+        return($lstCedula);
+        //dd($so2);
     }
 
     public function listCedulas()
