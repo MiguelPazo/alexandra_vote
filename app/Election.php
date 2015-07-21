@@ -4,7 +4,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Election extends Model
 {
-
+    protected $primaryKey="code";
     protected $fillable = [];
     public $timestamps = false;
 

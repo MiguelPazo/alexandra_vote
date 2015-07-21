@@ -22,7 +22,7 @@ class VoteController extends Controller
         $this->request = $request;
     }
 
-    public function index()
+    public function index2()
     {
         $lstCedula = $this->listCedulas();
         $error = $this->request->get('error', 0);
@@ -102,7 +102,7 @@ class VoteController extends Controller
      * @return array
      */
 
-    public function index2()
+    public function index()
     {
         $scopesstring="01";
         $scope=explode(config('vote.SEPARATOR'),$scopesstring);
@@ -111,11 +111,11 @@ class VoteController extends Controller
         //$scope_org::query("scope_code","=",$scope[0]);
         //$so = DB::table('scope_organizations')->where('scope_code','=' ,'01')->get();
         //$so = Scope_organization::where('scope_code','=' ,$scopesstring)->get();
-        $so = Scope_organization::Cedula('01')->get();
+        $so = Scope_organization::Cedula('01')->with('organization')->with('scope')->with('election')->get();
         //$so=$scope_org->get();
         $tudo="";
         foreach ($so as $post) {
-            $tudo=$tudo.$post->code;
+            $post->organization->description;
         }
         dd($so);
     }
