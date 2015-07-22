@@ -17,5 +17,8 @@ class Voter extends Model {
     public function scopePending($query){
     	return $query->where('status',Db::VOTER_PENDING);
     }
+    public function scopeNumele($query,$numele){
+    	return $query->where('num_ele',$numele);
+    }
 
 }

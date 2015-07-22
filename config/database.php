@@ -54,10 +54,10 @@ return [
 
 		'mysql' => [
 			'driver'    => 'mysql',
-			'host'      => env('DB_HOST', '127.0.0.1'),
-			'database'  => env('DB_DATABASE', 'venp'),
+			'host'      => env('DB_HOST', '192.168.48.130'),
+			'database'  => env('DB_DATABASE', 'alexandra'),
 			'username'  => env('DB_USERNAME', 'root'),
-			'password'  => env('DB_PASSWORD', 'viewsonic'),
+			'password'  => env('DB_PASSWORD', 'root'),
 			'charset'   => 'utf8',
 			'collation' => 'utf8_unicode_ci',
 			'prefix'    => 'ale_',

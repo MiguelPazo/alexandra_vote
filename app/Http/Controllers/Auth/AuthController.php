@@ -29,7 +29,8 @@ class AuthController extends Controller
     public function postLogin(Request $request)
     {
         $code = $request->input('code');
-        $voter = Voter::Enable()->Pending()->Pin($code)->first();
+        $numele = $request->input('dni');
+        $voter = Voter::Enable()->Pending()->Pin($code)->Numele($numele)->first();
         $success = false;
         $msj = 'código UCE incorrecto: ';        
         
