@@ -11,6 +11,6 @@ class Db
     const SEPARATOR = ",";
     const VOTER_ENABLED = 1;
     const VOTER_DISABLED = 0;
-    const VOTER_PENDING ='pending';
-    const VOTER_VOTE='vote';
+    const VOTER_PENDING = 'pending';
+    const VOTER_VOTE = 'vote';
 }

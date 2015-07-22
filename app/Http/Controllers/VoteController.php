@@ -1,14 +1,17 @@
 <?php namespace Ale\Http\Controllers;
 
+use Ale\Constants\Db;
 use Ale\Http\Requests;
 use Ale\Http\Controllers\Controller;
 
 use Ale\Organization;
 use Ale\Process;
 use Ale\Scope_organization;
+use Ale\Vote;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Collection;
-use DB;
+use Ale\Constants\App;
+use PhpSpec\Exception\Exception;
 
 class VoteController extends Controller
 {
@@ -24,8 +27,8 @@ class VoteController extends Controller
 
     public function index()
     {
-        $lstCedula = $this->listCedulas2('010603');
-        //dd($lstCedula);
+        $voter = $this->request->session()->get('voter');
+        $lstCedula = $this->listCedulas($voter->scopeCharter);
         $error = $this->request->get('error', 0);
         $message = '';
 
@@ -46,9 +49,12 @@ class VoteController extends Controller
     public function save()
     {
         $data = $this->request->all();
-        $lstCedula = $this->listCedulas();
+        $voter = $this->request->session()->get('voter');
+        $lstCedula = $this->listCedulas($voter->scopeCharter);
         $varByCedula = 3;
+        $dataCed = [];
         $success = $this->validateKeysData($lstCedula, $data);
+
 
         if ($success) {
             foreach ($lstCedula as $cedula) {
@@ -60,7 +66,7 @@ class VoteController extends Controller
 
                         if ($cedula->code == $code) {
                             //validate ced_{code} with {code}agrupol
-                            if (ConstApp::PREF_CED . $code == $key) {
+                            if (App::PREF_CED . $code == $key) {
                                 if ($value != '') {
                                     $codeInValue = substr($value, 0, 2);
 
@@ -76,7 +82,8 @@ class VoteController extends Controller
                                 if (!$this->validateAgrupolDetail($cedula, $dataToValid)) {
                                     $success = false;
                                 }
-
+                                $dataToValid['code'] = $code;
+                                $dataCed[] = $dataToValid;
                                 break;
                             }
                         }
@@ -88,7 +95,25 @@ class VoteController extends Controller
         }
 
         if ($success) {
+            //without transaction yet
+            try {
+                dd($dataCed);
 
+                foreach ($dataCed as $index => $vote) {
+                    $voteToEncrypt = $vote[App::PREF_CED . $vote['code']];
+
+                    Vote::create([
+                        'vote' => $this->encrypt($voteToEncrypt),
+                        'scope_charter' => $voter->scopeCharter,
+                        'election_code' => $vote['code']
+                    ]);
+                }
+            } catch (Exception $ex) {
+                $success = false;
+            }
+        }
+
+        if ($success) {
             return redirect()->route('vote.confirm');
         } else {
             return redirect()->route('vote.index', [
@@ -97,20 +122,26 @@ class VoteController extends Controller
         }
     }
 
+    public function encrypt($vote)
+    {
+        //ENCRYPT
+        return $vote;
+    }
+
     /**
      * List cedulas for user logged by ubigeo
      *
      * @return array
      */
 
-    public function listCedulas2($scopesstring)
+    public function listCedulas($scopesString)
     {
         //$scope=explode(config('vote.SEPARATOR'),$scopesstring);
         //$so = Scope_organization::Cedula($scopesstring)->with('organization')->with('scope')->with('election')->get();
         //$so2=$so->groupBy('election_code');
-        $so = Scope_organization::Cedula($scopesstring)->with('organization')->with('scope')->with('election')->get();
-        $so2=$so->groupBy('election_code');
-        $tudo="";
+        $so = Scope_organization::Cedula($scopesString)->with('organization')->with('scope')->with('election')->get();
+        $so2 = $so->groupBy('election_code');
+        $tudo = "";
 
         $lstCedula = new Collection();
         foreach ($so2 as $post) {
@@ -131,43 +162,8 @@ class VoteController extends Controller
             $lstCedula->add($c1);
         }
         //dd($lstCedula);
-        return($lstCedula);
+        return ($lstCedula);
         //dd($so2);
-    }
-
-    public function listCedulas()
-    {
-        $lstAgrupol = Organization::get();
-        $lstCedula = new Collection();
-
-        $c1 = new \stdClass();
-        $c1->title = 'Cédula 1';
-        $c1->code = '01';
-        $c1->lstAgrupol = $lstAgrupol;
-        $c2 = new \stdClass();
-        $c2->title = 'Cédula 2';
-        $c2->code = '02';
-        $c2->lstAgrupol = $lstAgrupol;
-        $c3 = new \stdClass();
-        $c3->title = 'Cédula 3';
-        $c3->code = '03';
-        $c3->lstAgrupol = $lstAgrupol;
-        $c4 = new \stdClass();
-        $c4->title = 'Cédula 4';
-        $c4->code = '04';
-        $c4->lstAgrupol = $lstAgrupol;
-        $c5 = new \stdClass();
-        $c5->title = 'Cédula 5';
-        $c5->code = '05';
-        $c5->lstAgrupol = $lstAgrupol;
-
-        $lstCedula->add($c1);
-        $lstCedula->add($c2);
-        $lstCedula->add($c3);
-        $lstCedula->add($c4);
-        $lstCedula->add($c5);
-
-        return $lstCedula;
     }
 
     /**
@@ -183,9 +179,9 @@ class VoteController extends Controller
         $count = 0;
 
         foreach ($lstCedula as $cedula) {
-            $codes[] = ConstApp::PREF_CED . $cedula->code;
-            $codes[] = ConstApp::PREF_CED_POSC . $cedula->code;
-            $codes[] = ConstApp::PREF_CED_DESC . $cedula->code;
+            $codes[] = App::PREF_CED . $cedula->code;
+            $codes[] = App::PREF_CED_POSC . $cedula->code;
+            $codes[] = App::PREF_CED_DESC . $cedula->code;
         }
 
         foreach ($codes as $key => $value) {
@@ -210,9 +206,9 @@ class VoteController extends Controller
      */
     public function validateAgrupolDetail($cedula, $dataAgrup)
     {
-        $agrupCode = substr($dataAgrup[ConstApp::PREF_CED . $cedula->code], 2);
-        $agrupDesc = $dataAgrup[ConstApp::PREF_CED_DESC . $cedula->code];
-        $agrupPosc = $dataAgrup[ConstApp::PREF_CED_POSC . $cedula->code];
+        $agrupCode = substr($dataAgrup[App::PREF_CED . $cedula->code], 2);
+        $agrupDesc = $dataAgrup[App::PREF_CED_DESC . $cedula->code];
+        $agrupPosc = $dataAgrup[App::PREF_CED_POSC . $cedula->code];
 
         if ($agrupCode) {
             $agrup = $cedula->lstAgrupol->filter(function ($item) use ($agrupCode) {
